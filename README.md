@@ -1,0 +1,2 @@
+# AndroidConnectivityWatcher
+Monitor Internet status
