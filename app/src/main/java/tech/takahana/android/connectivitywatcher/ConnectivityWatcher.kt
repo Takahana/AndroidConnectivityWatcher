@@ -22,7 +22,7 @@ class ConnectivityWatcher(private val context: Context) {
     private val connectivityManager: ConnectivityManager
         get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    val statusFlow = callbackFlow<ConnectivityStatus> {
+    val status = callbackFlow<ConnectivityStatus> {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
 
             override fun onAvailable(network: Network) = offerConnectivityStatus()
