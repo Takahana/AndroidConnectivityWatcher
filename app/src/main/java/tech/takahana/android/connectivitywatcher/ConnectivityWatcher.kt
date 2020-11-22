@@ -32,7 +32,7 @@ class ConnectivityWatcher(private val context: Context) {
         val builder = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // API LEVEL 23以上ならNetworkCapabilities.NET_CAPABILITY_VALIDATEDも指定
+            // Also adds NetworkCapabilities.NET_CAPABILITY_VALIDATED if the API LEVEL 23 or higher
             builder.addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }
         connectivityManager.registerNetworkCallback(builder.build(), networkCallback)
