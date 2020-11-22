@@ -19,15 +19,15 @@ class MainActivity : AppCompatActivity() {
         val watcher = ConnectivityWatcher(this)
         lifecycleScope.launch {
             watcher.statusFlow.collect { status ->
-                if (!status.isConnected()) {
+                if (!status.isEnabled()) {
                     // Disconnected action
                     Log.v("CONN", "disconnected")
                 } else {
                     // switch wifi or cellular
-                    if (status.isCellular()) {
+                    if (status.isCellularEnabled()) {
                         Log.v("CONN", "cellular is available")
                     }
-                    if (status.isWiFi()) {
+                    if (status.isWiFiEnabled()) {
                         Log.v("CONN", "wifi is available")
                     }
                 }

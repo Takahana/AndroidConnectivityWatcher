@@ -54,17 +54,26 @@ class ConnectivityWatcher(private val context: Context) {
 
     class ConnectivityStatus(private val connectivityManager: ConnectivityManager) {
 
-        fun isConnected(): Boolean {
+        /**
+         * @return boolean Whether or not there is an Internet connection
+         */
+        fun isEnabled(): Boolean {
             return getActiveNetworkCapabilities().isNotEmpty()
         }
 
-        fun isWiFi(): Boolean {
+        /**
+         * @return boolean Whether or not there is a Wifi Internet connection
+         */
+        fun isWiFiEnabled(): Boolean {
             return getActiveNetworkCapabilities().any {
                 it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
             }
         }
 
-        fun isCellular(): Boolean {
+        /**
+         * @return boolean Whether or not there is a Cellular internet connection
+         */
+        fun isCellularEnabled(): Boolean {
             return getActiveNetworkCapabilities().any {
                 it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
             }
