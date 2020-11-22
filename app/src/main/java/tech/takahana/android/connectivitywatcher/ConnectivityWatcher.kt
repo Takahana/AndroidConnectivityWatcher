@@ -6,10 +6,14 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.shareIn
 
 @ExperimentalCoroutinesApi
 class ConnectivityWatcher(private val context: Context) {
@@ -37,7 +41,12 @@ class ConnectivityWatcher(private val context: Context) {
         awaitClose {
             connectivityManager.unregisterNetworkCallback(networkCallback)
         }
-    }
+    }.shareIn(
+        ProcessLifecycleOwner.get().lifecycleScope,
+        SharingStarted.WhileSubscribed(),
+        1
+    )
+
 
     private fun ProducerScope<ConnectivityStatus>.offerConnectivityStatus() {
         offer(ConnectivityStatus(connectivityManager))
