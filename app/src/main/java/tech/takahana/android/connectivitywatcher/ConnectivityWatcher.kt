@@ -24,9 +24,13 @@ class ConnectivityWatcher(private val context: Context) {
     val status = callbackFlow<ConnectivityStatus> {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
 
-            override fun onAvailable(network: Network) = offerConnectivityStatus()
+            override fun onAvailable(network: Network) {
+                offer(ConnectivityStatus(connectivityManager))
+            }
 
-            override fun onLost(network: Network) = offerConnectivityStatus()
+            override fun onLost(network: Network) {
+                offer(ConnectivityStatus(connectivityManager))
+            }
         }
 
         val builder = NetworkRequest.Builder()
@@ -45,11 +49,6 @@ class ConnectivityWatcher(private val context: Context) {
         SharingStarted.WhileSubscribed(),
         1
     )
-
-
-    private fun ProducerScope<ConnectivityStatus>.offerConnectivityStatus() {
-        offer(ConnectivityStatus(connectivityManager))
-    }
 
     class ConnectivityStatus(private val connectivityManager: ConnectivityManager) {
 
