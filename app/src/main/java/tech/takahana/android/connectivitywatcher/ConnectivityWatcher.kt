@@ -9,7 +9,6 @@ import android.os.Build
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
@@ -25,11 +24,11 @@ class ConnectivityWatcher(private val context: Context) {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
 
             override fun onAvailable(network: Network) {
-                offer(ConnectivityStatus(connectivityManager))
+                offer(ConnectivityStatus(getNetworkCapabilities()))
             }
 
             override fun onLost(network: Network) {
-                offer(ConnectivityStatus(connectivityManager))
+                offer(ConnectivityStatus(getNetworkCapabilities()))
             }
         }
 
@@ -50,46 +49,18 @@ class ConnectivityWatcher(private val context: Context) {
         1
     )
 
-    class ConnectivityStatus(private val connectivityManager: ConnectivityManager) {
-
-        /**
-         * @return boolean Whether or not there is an Internet connection
-         */
-        fun isEnabled(): Boolean {
-            return getActiveNetworkCapabilities().isNotEmpty()
-        }
-
-        /**
-         * @return boolean Whether or not there is a Wifi Internet connection
-         */
-        fun isWiFiEnabled(): Boolean {
-            return getActiveNetworkCapabilities().any {
-                it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+    private fun getNetworkCapabilities(): List<NetworkCapabilities> {
+        return connectivityManager.allNetworks
+            .mapNotNull { network ->
+                connectivityManager.getNetworkCapabilities(network)
             }
-        }
-
-        /**
-         * @return boolean Whether or not there is a Cellular internet connection
-         */
-        fun isCellularEnabled(): Boolean {
-            return getActiveNetworkCapabilities().any {
-                it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .filter {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                            it.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                } else {
+                    it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                }
             }
-        }
-
-        private fun getActiveNetworkCapabilities(): List<NetworkCapabilities> {
-            return connectivityManager.allNetworks
-                .mapNotNull { network ->
-                    connectivityManager.getNetworkCapabilities(network)
-                }
-                .filter {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                                it.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                    } else {
-                        it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    }
-                }
-        }
     }
 }
