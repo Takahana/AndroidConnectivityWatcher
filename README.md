@@ -1,22 +1,16 @@
 # AndroidConnectivityWatcher
-Monitor Internet status
+Monitor Internet Connectivity
 
 ```
-val watcher = ConnectivityWatcher(this)  
-lifecycleScope.launch {  
-    watcher.statusFlow.collect { status ->  
-        if (!status.isConnected()) {  
-            // Disconnected action  
-            Log.v("CONN", "disconnected")  
-        } else {  
-            // switch wifi or cellular  
-            if (status.isCellular()) {  
-                Log.v("CONN", "cellular is available")  
-            }  
-            if (status.isWiFi()) {  
-                Log.v("CONN", "wifi is available")  
-            }  
-        }  
-    }  
-}  
+  val watcher = ConnectivityWatcher(this)
+  //..
+  
+  
+  lifecycleScope.launchWhenResumed {
+        watcher.status.collect { status ->
+            if (!status.isEnabled()) {
+                showToast("No Internet connection")
+            }
+        }
+    }
 ```
