@@ -2,12 +2,17 @@ package tech.takahana.android.connectivitywatcher
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import tech.takahana.android.connectivitywatcher.extension.showToast
 
+@ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
+
+    private val watcher by lazy {
+        ConnectivityWatcher(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,19 +21,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeConnectivity() {
-        val watcher = ConnectivityWatcher(this)
-        lifecycleScope.launch {
-            watcher.statusFlow.collect { status ->
-                if (!status.isConnected()) {
+        lifecycleScope.launchWhenResumed {
+            watcher.status.collect { status ->
+                if (!status.isEnabled()) {
                     // Disconnected action
-                    Log.v("CONN", "disconnected")
+                    showToast("No Internet connection")
                 } else {
-                    // switch wifi or cellular
-                    if (status.isCellular()) {
-                        Log.v("CONN", "cellular is available")
+                    if (status.isCellularEnabled()) {
+                        showToast("Cellular Internet connection is enabled")
                     }
-                    if (status.isWiFi()) {
-                        Log.v("CONN", "wifi is available")
+                    if (status.isWiFiEnabled()) {
+                        showToast("Wifi Internet connection is enabled")
                     }
                 }
             }
