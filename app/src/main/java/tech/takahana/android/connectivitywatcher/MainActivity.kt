@@ -23,15 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeConnectivity() {
         lifecycleScope.launchWhenResumed {
-            mainViewModel.watcher.status.collect { status ->
-                if (!status.isEnabled()) {
+            mainViewModel.connectivity.collect {
+                if (!it.isEnabled()) {
                     // Disconnected action
                     showToast("No Internet connection")
                 } else {
-                    if (status.isCellularEnabled()) {
+                    if (it.isCellularEnabled()) {
                         showToast("Cellular Internet connection is enabled")
                     }
-                    if (status.isWiFiEnabled()) {
+                    if (it.isWiFiEnabled()) {
                         showToast("Wifi Internet connection is enabled")
                     }
                 }

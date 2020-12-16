@@ -24,10 +24,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
 
         job = lifecycleScope.launchWhenResumed {
-            mainViewModel.watcher.status
-                .collect {
-                    // do nothing
-                }
+            mainViewModel.connectivity.collect { /* do nothing */ }
         }
     }
 

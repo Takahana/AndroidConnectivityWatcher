@@ -20,7 +20,7 @@ class ConnectivityFragment : Fragment(R.layout.fragment_connectivity) {
         val binding = FragmentConnectivityBinding.bind(view)
 
         lifecycleScope.launchWhenResumed {
-            mainViewModel.watcher.status.collect {
+            mainViewModel.connectivity.collect {
                 binding.textView.text = if (!it.isEnabled()) {
                     "No Internet connection"
                 } else if (it.isWiFiEnabled()) {
