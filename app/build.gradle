@@ -29,6 +29,10 @@ android {
         jvmTarget = '1.8'
     }
 
+    viewBinding {
+        enabled = true
+    }
+
 }
 
 dependencies {
@@ -46,6 +50,8 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_jetpack_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.2"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_jetpack_version"
 }
