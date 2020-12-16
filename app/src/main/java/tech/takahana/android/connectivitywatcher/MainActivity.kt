@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import tech.takahana.android.connectivitywatcher.extension.showToast
 
 @ExperimentalCoroutinesApi
@@ -23,15 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeConnectivity() {
         lifecycleScope.launchWhenResumed {
-            mainViewModel.watcher.status.collect { status ->
-                if (!status.isEnabled()) {
+            mainViewModel.connectivity.collectLatest {
+                if (!it.isEnabled()) {
                     // Disconnected action
                     showToast("No Internet connection")
                 } else {
-                    if (status.isCellularEnabled()) {
+                    if (it.isCellularEnabled()) {
                         showToast("Cellular Internet connection is enabled")
                     }
-                    if (status.isWiFiEnabled()) {
+                    if (it.isWiFiEnabled()) {
                         showToast("Wifi Internet connection is enabled")
                     }
                 }
