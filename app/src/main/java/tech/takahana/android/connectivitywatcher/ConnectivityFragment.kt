@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import tech.takahana.android.connectivitywatcher.databinding.FragmentConnectivityBinding
 
 @AndroidEntryPoint
@@ -20,7 +20,7 @@ class ConnectivityFragment : Fragment(R.layout.fragment_connectivity) {
         val binding = FragmentConnectivityBinding.bind(view)
 
         lifecycleScope.launchWhenResumed {
-            mainViewModel.connectivity.collect {
+            mainViewModel.connectivity.collectLatest {
                 binding.textView.text = if (!it.isEnabled()) {
                     "No Internet connection"
                 } else if (it.isWiFiEnabled()) {
