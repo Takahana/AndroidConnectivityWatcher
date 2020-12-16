@@ -7,14 +7,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import tech.takahana.android.connectivitywatcher.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private var job: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -24,7 +22,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             showConnectivity()
         }
 
-        job = lifecycleScope.launchWhenResumed {
+        lifecycleScope.launchWhenResumed {
             mainViewModel.connectivity.collectLatest {
                 val text = if (!it.isEnabled()) {
                     "No Internet connection"
