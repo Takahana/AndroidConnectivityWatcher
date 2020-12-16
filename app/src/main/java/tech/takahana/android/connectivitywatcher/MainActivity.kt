@@ -1,18 +1,19 @@
 package tech.takahana.android.connectivitywatcher
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import tech.takahana.android.connectivitywatcher.extension.showToast
 
 @ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val watcher by lazy {
-        ConnectivityWatcher(this)
-    }
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeConnectivity() {
         lifecycleScope.launchWhenResumed {
-            watcher.status.collect { status ->
+            mainViewModel.watcher.status.collect { status ->
                 if (!status.isEnabled()) {
                     // Disconnected action
                     showToast("No Internet connection")
