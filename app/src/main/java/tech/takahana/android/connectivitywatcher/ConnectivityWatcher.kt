@@ -43,11 +43,13 @@ class ConnectivityWatcher(private val context: Context) {
         awaitClose {
             connectivityManager.unregisterNetworkCallback(networkCallback)
         }
-    }.shareIn(
-        ProcessLifecycleOwner.get().lifecycleScope,
-        SharingStarted.WhileSubscribed(),
-        1
-    )
+    }
+        .buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST)
+        .shareIn(
+            ProcessLifecycleOwner.get().lifecycleScope,
+            SharingStarted.WhileSubscribed(),
+            replay = 1
+        )
 
     private fun getNetworkCapabilities(): List<NetworkCapabilities> {
         return connectivityManager.allNetworks
