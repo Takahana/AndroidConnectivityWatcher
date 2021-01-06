@@ -8,16 +8,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tech.takahana.android.connectivitywatcher.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     private var scopeCancelledWhenPaused = CoroutineScope(Dispatchers.IO)
+    private var connectivityJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,8 +28,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             showConnectivity()
         }
 
-        scopeCancelledWhenPaused.launch {
-            mainViewModel.connectivity
+        connectivityJob = scopeCancelledWhenPaused.launch {
+            viewModel.connectivity
                 .collectLatest {
                     val text = if (!it.isEnabled()) {
                         "No Internet connection"
@@ -46,7 +47,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     override fun onPause() {
         super.onPause()
-        scopeCancelledWhenPaused.cancel()
+        connectivityJob?.cancel()
     }
 
     private fun showConnectivity() {
